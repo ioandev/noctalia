@@ -406,7 +406,7 @@ void LockSurface::onPointerEvent(const PointerEvent& event) {
     m_inputDispatcher.pointerMotion(static_cast<float>(event.sx), static_cast<float>(event.sy), event.serial);
     break;
   case PointerEvent::Type::Button: {
-    const bool pressed = event.state == WL_POINTER_BUTTON_STATE_PRESSED;
+    const bool pressed = event.pressed;
     const auto x = static_cast<float>(event.sx);
     const auto y = static_cast<float>(event.sy);
     if (m_locked && pressed && passwordFieldContainsPoint(x, y)) {

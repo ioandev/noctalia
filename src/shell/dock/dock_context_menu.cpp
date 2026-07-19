@@ -106,7 +106,7 @@ namespace shell::dock {
         // Keep hover state synced before click dispatch so stationary pointers can
         // still activate rows even if Enter/Motion ordering is flaky.
         popup.inputDispatcher.pointerMotion(static_cast<float>(event.sx), static_cast<float>(event.sy), event.serial);
-        const bool pressed = (event.state == 1);
+        const bool pressed = event.pressed;
         popup.inputDispatcher.pointerButton(
             static_cast<float>(event.sx), static_cast<float>(event.sy), event.button, pressed
         );
@@ -251,8 +251,10 @@ namespace shell::dock {
       return nullptr;
     }
 
-    // Compute popup height.
+    // Compute popup geometry; width grows past the base width to fit long window titles.
     const float menuHeight = ContextMenuControl::preferredHeight(entries, entries.size());
+    const float menuWidth =
+        std::clamp(ContextMenuControl::preferredWidth(renderContext, entries), kMenuWidth, Style::menuAutoMaxWidth);
 
     // Determine anchor / gravity + gap based on dock position.
     const DockEdge edge = dockConfig.position;
@@ -296,7 +298,7 @@ namespace shell::dock {
     const std::int32_t aH = halfCell * 2;
 
     const auto menuChrome = popup_chrome::computeGeometry(
-        kMenuWidth, menuHeight, config.config().shell.shadow, Style::popupShadowsEnabled()
+        menuWidth, menuHeight, config.config().shell.shadow, Style::popupShadowsEnabled()
     );
     PopupSurfaceConfig popupCfg{
         .anchorX = aX,
@@ -364,6 +366,7 @@ namespace shell::dock {
             *menuPtr->sceneRoot, menuPtr->chrome, config.config().shell.shadow, Style::scaledRadiusLg()
         );
       }
+      (void)popup_chrome::addCardBackground(*menuPtr->sceneRoot, menuPtr->chrome, 1.0f);
 
       auto ctrl = std::make_unique<ContextMenuControl>();
       ctrl->setMenuWidth(menuPtr->chrome.contentWidth);

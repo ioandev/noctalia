@@ -1184,6 +1184,7 @@ namespace noctalia::config::schema {
           enumField(&ShellConfig::PanelConfig::transparencyMode, "transparency_mode", kPanelTransparencyModes),
           field(&ShellConfig::PanelConfig::borders, "borders"),
           field(&ShellConfig::PanelConfig::shadow, "shadow"),
+          field(&ShellConfig::PanelConfig::listItemBackground, "list_item_background"),
           enumField(&ShellConfig::PanelConfig::launcherPlacement, "launcher_placement", kPanelPlacements),
           enumField(&ShellConfig::PanelConfig::clipboardPlacement, "clipboard_placement", kPanelPlacements),
           enumField(&ShellConfig::PanelConfig::controlCenterPlacement, "control_center_placement", kPanelPlacements),
@@ -1239,6 +1240,18 @@ namespace noctalia::config::schema {
       static const Schema<ShellConfig::ScreenCornersConfig> s = {
           field(&ShellConfig::ScreenCornersConfig::enabled, "enabled"),
           field(&ShellConfig::ScreenCornersConfig::size, "size", kScreenCornersSizeRange),
+      };
+      return s;
+    }
+
+    const Schema<ShellConfig::FrameConfig>& shellFrameSchema() {
+      static const Schema<ShellConfig::FrameConfig> s = {
+          field(&ShellConfig::FrameConfig::enabled, "enabled"),
+          field(&ShellConfig::FrameConfig::thickness, "thickness", kFrameThicknessRange),
+          field(&ShellConfig::FrameConfig::radius, "radius", kFrameRadiusRange),
+          field(&ShellConfig::FrameConfig::matchBar, "match_bar"),
+          field(&ShellConfig::FrameConfig::opacity, "opacity", kUnitRange),
+          field(&ShellConfig::FrameConfig::bleed, "bleed", kFrameBleedRange),
       };
       return s;
     }
@@ -1418,6 +1431,7 @@ namespace noctalia::config::schema {
         subTable(&ShellConfig::panel, "panel", shellPanelSchema()),
         subTable(&ShellConfig::launcher, "launcher", shellLauncherSchema()),
         subTable(&ShellConfig::screenCorners, "screen_corners", shellScreenCornersSchema()),
+        subTable(&ShellConfig::frame, "frame", shellFrameSchema()),
         subTable(&ShellConfig::mpris, "mpris", shellMprisSchema()),
         subTable(&ShellConfig::screenshot, "screenshot", shellScreenshotSchema()),
         subTable(&ShellConfig::privacy, "privacy", shellPrivacySchema()),

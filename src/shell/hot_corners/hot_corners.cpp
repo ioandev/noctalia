@@ -189,7 +189,7 @@ bool HotCorners::onPointerEvent(const PointerEvent& event) {
           return true;
         case PointerEvent::Type::Button:
           return corner->inputDispatcher.pointerButton(
-              static_cast<float>(event.sx), static_cast<float>(event.sy), event.button, event.state == 1
+              static_cast<float>(event.sx), static_cast<float>(event.sy), event.button, event.pressed
           );
         case PointerEvent::Type::Axis:
           return corner->inputDispatcher.pointerAxis(

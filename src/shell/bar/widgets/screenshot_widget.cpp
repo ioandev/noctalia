@@ -123,7 +123,7 @@ bool ScreenshotWidget::onPointerEvent(const PointerEvent& event) {
     return false;
   }
   const bool consumed = m_menuPopup->onPointerEvent(event);
-  if (!consumed && event.type == PointerEvent::Type::Button && event.state == 1) {
+  if (!consumed && event.type == PointerEvent::Type::Button && event.pressed) {
     m_menuPopup->close();
     return true;
   }
@@ -262,12 +262,12 @@ void ScreenshotWidget::openCaptureMenu() {
       barWidgetContextMenuAnchor(m_barPosition, absX, absY, area.width(), area.height(), m_contentScale);
 
   constexpr float kMenuWidth = 246.0f;
-  const float menuWidth = kMenuWidth * m_contentScale;
   const std::size_t maxVisible = std::max<std::size_t>(1, entries.size());
   m_menuPopup->open(
       ContextMenuPopupRequest{
           .entries = std::move(entries),
-          .menuWidth = menuWidth,
+          .minMenuWidth = kMenuWidth * m_contentScale,
+          .maxMenuWidth = Style::menuAutoMaxWidth * m_contentScale,
           .maxVisible = maxVisible,
           .anchor =
               PopupAnchorRect{

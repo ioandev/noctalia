@@ -322,7 +322,8 @@ void SettingsWindow::openActionsMenu() {
   m_actionsMenuPopup->open(
       ContextMenuPopupRequest{
           .entries = std::move(entries),
-          .menuWidth = 220.0f * scale,
+          .minMenuWidth = 220.0f * scale,
+          .maxMenuWidth = Style::menuAutoMaxWidth * scale,
           .maxVisible = 8,
           .anchor =
               PopupAnchorRect{

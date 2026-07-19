@@ -1929,7 +1929,7 @@ bool TaskbarWidget::onPointerEvent(const PointerEvent& event) {
     return false;
   }
   const bool consumed = m_contextMenuPopup->onPointerEvent(event);
-  if (!consumed && event.type == PointerEvent::Type::Button && event.state == 1) {
+  if (!consumed && event.type == PointerEvent::Type::Button && event.pressed) {
     m_contextMenuPopup->close();
     return true;
   }
@@ -2078,7 +2078,6 @@ void TaskbarWidget::openTaskContextMenu(const TaskModel& task, InputArea& area) 
   float anchorH = std::max(1.0f, area.height() - (anchorInset * 2.0f));
 
   constexpr float kTaskMenuWidth = 240.0f;
-  const float menuWidth = kTaskMenuWidth * m_contentScale;
   const std::int32_t gap = std::max(2, static_cast<std::int32_t>(std::lround(Style::spaceMd * m_contentScale)));
 
   std::optional<ContextMenuPopupPlacement> placement;
@@ -2102,17 +2101,35 @@ void TaskbarWidget::openTaskContextMenu(const TaskModel& task, InputArea& area) 
         },
     };
   } else if (m_barPosition == "left") {
-    anchorX = absX + area.width() + (menuWidth * 0.5f) + static_cast<float>(gap);
-    anchorW = 1.0f;
+    // Gravity-based placement instead of a width-derived anchor offset, so the menu can auto-size.
+    placement = ContextMenuPopupPlacement{
+        .anchor = XDG_POSITIONER_ANCHOR_RIGHT,
+        .gravity = XDG_POSITIONER_GRAVITY_RIGHT,
+        .offsetX = gap,
+        .offsetY = 0,
+        .chromeAttachment = popup_chrome::Attachment{
+            .horizontal = popup_chrome::HorizontalAttachment::Left,
+            .vertical = popup_chrome::VerticalAttachment::Center,
+        },
+    };
   } else if (m_barPosition == "right") {
-    anchorX = absX - (menuWidth * 0.5f) - static_cast<float>(gap);
-    anchorW = 1.0f;
+    placement = ContextMenuPopupPlacement{
+        .anchor = XDG_POSITIONER_ANCHOR_LEFT,
+        .gravity = XDG_POSITIONER_GRAVITY_LEFT,
+        .offsetX = -gap,
+        .offsetY = 0,
+        .chromeAttachment = popup_chrome::Attachment{
+            .horizontal = popup_chrome::HorizontalAttachment::Right,
+            .vertical = popup_chrome::VerticalAttachment::Center,
+        },
+    };
   }
 
   m_contextMenuPopup->open(
       ContextMenuPopupRequest{
           .entries = std::move(entries),
-          .menuWidth = menuWidth,
+          .minMenuWidth = kTaskMenuWidth * m_contentScale,
+          .maxMenuWidth = Style::menuAutoMaxWidth * m_contentScale,
           .maxVisible = 12,
           .anchor =
               PopupAnchorRect{

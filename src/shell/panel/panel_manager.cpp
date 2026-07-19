@@ -1359,7 +1359,7 @@ bool PanelManager::onPointerEvent(const PointerEvent& event) {
     if (m_selectPopup->onPointerEvent(event)) {
       return true;
     }
-    if (event.type == PointerEvent::Type::Button && event.state == 1) {
+    if (event.type == PointerEvent::Type::Button && event.pressed) {
       m_selectPopup->closeSelectDropdown();
       return true;
     }
@@ -1369,7 +1369,7 @@ bool PanelManager::onPointerEvent(const PointerEvent& event) {
     if (m_activePopup->onPointerEvent(event)) {
       return true;
     }
-    if (event.type == PointerEvent::Type::Button && event.state == 1) {
+    if (event.type == PointerEvent::Type::Button && event.pressed) {
       m_activePopup->close();
       return true;
     }
@@ -1409,7 +1409,7 @@ bool PanelManager::onPointerEvent(const PointerEvent& event) {
     break;
   }
   case PointerEvent::Type::Button: {
-    bool pressed = (event.state == 1);
+    bool pressed = event.pressed;
 
     // Click outside panel closes it.
     if (pressed && !m_pointerInside) {

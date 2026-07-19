@@ -312,7 +312,7 @@ void WaylandSeat::handlePointerButton(
           .sy = self->m_hasPointerPosition ? self->m_lastPointerY : 0.0,
           .time = time,
           .button = button,
-          .state = state,
+          .pressed = (state == WL_POINTER_BUTTON_STATE_PRESSED),
       }
   );
 }
@@ -453,7 +453,7 @@ void WaylandSeat::handleTouchDown(
           .sy = self->m_lastPointerY,
           .time = time,
           .button = BTN_LEFT,
-          .state = WL_POINTER_BUTTON_STATE_PRESSED,
+          .pressed = true,
       }
   );
 }
@@ -476,7 +476,7 @@ void WaylandSeat::handleTouchUp(
           .sy = self->m_lastPointerY,
           .time = time,
           .button = BTN_LEFT,
-          .state = WL_POINTER_BUTTON_STATE_RELEASED,
+          .pressed = false,
       }
   );
   self->m_pendingTouchEvents.push_back(
@@ -558,7 +558,7 @@ void WaylandSeat::handleTouchCancel(void* data, wl_touch* /*touch*/) {
             .sx = self->m_lastPointerX,
             .sy = self->m_lastPointerY,
             .button = BTN_LEFT,
-            .state = WL_POINTER_BUTTON_STATE_RELEASED,
+            .pressed = false,
         }
     );
     self->m_pointerEventCallback(

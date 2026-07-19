@@ -1713,9 +1713,31 @@ void Bar::syncBarExclusiveZone(BarInstance& instance) {
   instance.surface->setExclusiveZone(zone);
 }
 
+bool Bar::reservesLayoutSpace() const noexcept {
+  return std::ranges::any_of(m_instances, [this](const auto& inst) { return shouldReserveExclusiveZone(*inst); });
+}
+
+void Bar::setVisibilityChangedCallback(std::function<void()> callback) {
+  m_visibilityChangedCallback = std::move(callback);
+}
+
+void Bar::notifyVisibilityChanged() {
+  const bool visible = isVisible();
+  if (visible == m_lastReportedVisible) {
+    return;
+  }
+  m_lastReportedVisible = visible;
+  if (m_visibilityChangedCallback != nullptr) {
+    m_visibilityChangedCallback();
+  }
+}
+
 void Bar::syncBarSurfaceChrome(BarInstance& instance) {
   syncBarExclusiveZone(instance);
   applyBarCompositorBlur(instance);
+  // Every visibility-affecting path funnels through here; gated on an actual transition so an
+  // auto-hide animation does not rebuild dependents on every frame.
+  notifyVisibilityChanged();
 }
 
 std::optional<LayerPopupParentContext> Bar::popupParentContextForSurface(wl_surface* surface) const noexcept {
@@ -3116,7 +3138,7 @@ bool Bar::onPointerEvent(const PointerEvent& event) {
   if (targetInstance != nullptr
       && event.type == PointerEvent::Type::Button
       && event.button == BTN_MIDDLE
-      && event.state == 1
+      && event.pressed
       && m_config != nullptr
       && m_config->config().shell.middleClickOpensWidgetSettings) {
     auto* widget = widgetAtPoint(*targetInstance, static_cast<float>(event.sx), static_cast<float>(event.sy));
@@ -3144,7 +3166,7 @@ bool Bar::onPointerEvent(const PointerEvent& event) {
     case PointerEvent::Type::Motion:
     case PointerEvent::Type::Button:
     case PointerEvent::Type::Axis:
-      if (event.type == PointerEvent::Type::Button && event.button == BTN_RIGHT && event.state == 1) {
+      if (event.type == PointerEvent::Type::Button && event.button == BTN_RIGHT && event.pressed) {
         const auto sx = static_cast<float>(event.sx);
         const auto sy = static_cast<float>(event.sy);
         const auto& deadZone = targetInstance->barConfig.deadZone;
@@ -3216,7 +3238,7 @@ bool Bar::onPointerEvent(const PointerEvent& event) {
     m_hoveredInstance->lastPointerSy = static_cast<float>(event.sy);
     const auto sx = static_cast<float>(event.sx);
     const auto sy = static_cast<float>(event.sy);
-    bool pressed = (event.state == 1); // WL_POINTER_BUTTON_STATE_PRESSED
+    bool pressed = event.pressed;
     consumed = m_hoveredInstance->inputDispatcher.pointerButton(sx, sy, event.button, pressed);
     if (pressed && !consumed) {
       if (handleBarDeadZoneButton(*m_hoveredInstance, sx, sy, event.button, m_platform)) {

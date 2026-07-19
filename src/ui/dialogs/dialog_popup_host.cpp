@@ -309,7 +309,7 @@ bool DialogPopupHost::onPointerEvent(const PointerEvent& event) {
     } else {
       m_inputDispatcher.pointerMotion(localX, localY, event.serial);
     }
-    m_inputDispatcher.pointerButton(localX, localY, event.button, event.state == 1);
+    m_inputDispatcher.pointerButton(localX, localY, event.button, event.pressed);
     break;
   case PointerEvent::Type::Axis:
     if (captured) {

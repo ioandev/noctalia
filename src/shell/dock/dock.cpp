@@ -479,7 +479,7 @@ bool Dock::onPointerEvent(const PointerEvent& event) {
     if (consumed) {
       return true;
     }
-    if (event.type == PointerEvent::Type::Button && event.state == 1) {
+    if (event.type == PointerEvent::Type::Button && event.pressed) {
       closeItemMenu();
       if (event.surface == nullptr || !m_surfaceMap.contains(event.surface)) {
         return true;
@@ -589,7 +589,7 @@ bool Dock::onPointerEvent(const PointerEvent& event) {
 
     if (m_hoveredInstance == nullptr)
       break;
-    const bool pressed = (event.state == 1);
+    const bool pressed = event.pressed;
     m_hoveredInstance->inputDispatcher.pointerButton(
         static_cast<float>(event.sx), static_cast<float>(event.sy), event.button, pressed
     );

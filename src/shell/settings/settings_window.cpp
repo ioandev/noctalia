@@ -800,7 +800,7 @@ bool SettingsWindow::onPointerEvent(const PointerEvent& event) {
       && m_widgetAddPopup->isOpen()
       && !m_widgetAddPopup->isInitializing()
       && event.type == PointerEvent::Type::Button
-      && event.state == 1) {
+      && event.pressed) {
     m_widgetAddPopup->close();
     return true;
   }
@@ -811,7 +811,7 @@ bool SettingsWindow::onPointerEvent(const PointerEvent& event) {
       && m_configExportDialogPopup->isOpen()
       && !m_configExportDialogPopup->isInitializing()
       && event.type == PointerEvent::Type::Button
-      && event.state == 1) {
+      && event.pressed) {
     m_configExportDialogPopup->close();
     return true;
   }
@@ -822,7 +822,7 @@ bool SettingsWindow::onPointerEvent(const PointerEvent& event) {
       && m_searchPickerPopup->isOpen()
       && !m_searchPickerPopup->isInitializing()
       && event.type == PointerEvent::Type::Button
-      && event.state == 1) {
+      && event.pressed) {
     m_searchPickerPopup->close();
     return true;
   }
@@ -833,7 +833,7 @@ bool SettingsWindow::onPointerEvent(const PointerEvent& event) {
       && m_editorSheetPopup->isOpen()
       && !m_editorSheetPopup->isInitializing()
       && event.type == PointerEvent::Type::Button
-      && event.state == 1) {
+      && event.pressed) {
     m_editorSheetPopup->close();
     return true;
   }
@@ -842,7 +842,7 @@ bool SettingsWindow::onPointerEvent(const PointerEvent& event) {
     if (m_selectPopup->onPointerEvent(event)) {
       return true;
     }
-    if (event.type == PointerEvent::Type::Button && event.state == 1) {
+    if (event.type == PointerEvent::Type::Button && event.pressed) {
       m_selectPopup->closeSelectDropdown();
       return true;
     }
@@ -854,7 +854,7 @@ bool SettingsWindow::onPointerEvent(const PointerEvent& event) {
   if (m_actionsMenuPopup != nullptr
       && m_actionsMenuPopup->isOpen()
       && event.type == PointerEvent::Type::Button
-      && event.state == 1) {
+      && event.pressed) {
     m_actionsMenuPopup->close();
     return true;
   }
@@ -887,7 +887,7 @@ bool SettingsWindow::onPointerEvent(const PointerEvent& event) {
     }
     break;
   case PointerEvent::Type::Button: {
-    const bool pressed = (event.state == 1);
+    const bool pressed = event.pressed;
     if (onThis || m_pointerInside) {
       if (onThis) {
         m_pointerInside = true;

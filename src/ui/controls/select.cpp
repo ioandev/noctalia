@@ -440,8 +440,10 @@ void Select::openPopupDropdown() {
   const float triggerWidth = absRight - absLeft;
   const float triggerHeight = absBottom - absTop;
 
-  // Compute menu width: match trigger width, but also consider widest option label
-  float menuWidth = std::max(minWidth(), triggerWidth);
+  // At least the trigger width, growing to fit the widest option label up to a cap.
+  // fontSize is pre-scaled by callers, so deriving the cap from it tracks UI scale.
+  const float menuWidth = std::max(minWidth(), triggerWidth);
+  const float maxMenuWidth = std::max(menuWidth, Style::menuAutoMaxWidth * (m_fontSize / Style::fontSizeBody));
 
   SelectPopupContext::DropdownRequest request{
       .anchorX = static_cast<std::int32_t>(std::round(absLeft)),
@@ -449,10 +451,8 @@ void Select::openPopupDropdown() {
       .anchorWidth = static_cast<std::int32_t>(std::round(triggerWidth)),
       .anchorHeight = static_cast<std::int32_t>(std::round(triggerHeight)),
       .menuWidth = menuWidth,
-      .optionHeight = m_controlHeight,
+      .maxMenuWidth = maxMenuWidth,
       .fontSize = m_fontSize,
-      .glyphSize = m_glyphSize,
-      .horizontalPadding = m_horizontalPadding,
       .options = m_options,
       .indicatorColors = m_indicatorColors,
       .optionSwatchPreviews = m_optionSwatchPreviews,
@@ -472,7 +472,6 @@ void Select::openPopupDropdown() {
             m_open = false;
             animateCaret(false);
           },
-      .onHoverChanged = nullptr,
   };
 
   m_open = true;

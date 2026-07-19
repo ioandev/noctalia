@@ -2752,7 +2752,7 @@ bool NotificationToast::onKeyboardEvent(const KeyboardEvent& event) {
 // --- Pointer events ---
 
 bool NotificationToast::onPointerEvent(const PointerEvent& event) {
-  if (event.type == PointerEvent::Type::Button && event.state == 1) {
+  if (event.type == PointerEvent::Type::Button && event.pressed) {
     for (auto& inst : m_instances) {
       if (inst->surface == nullptr) {
         continue;
@@ -2802,7 +2802,7 @@ bool NotificationToast::onPointerEvent(const PointerEvent& event) {
       if (inst->pointerInside) {
         inst->lastPointerX = static_cast<float>(event.sx);
         inst->lastPointerY = static_cast<float>(event.sy);
-        const bool pressed = (event.state == 1);
+        const bool pressed = event.pressed;
         inst->inputDispatcher.pointerMotion(static_cast<float>(event.sx), static_cast<float>(event.sy), event.serial);
         inst->inputDispatcher.pointerButton(
             static_cast<float>(event.sx), static_cast<float>(event.sy), event.button, pressed
